@@ -43,8 +43,6 @@ void print_node(Node* n){
     printf("\n");
 }
 
-
-
 int is_valid(Node* n){
    //Filas
    for (int i = 0 ; i < 9 ; i++){
@@ -84,17 +82,18 @@ int is_valid(Node* n){
 }
 
 
-
 List* get_adj_nodes(Node* n){
    List* list=createList();
    int i,j, k;
+   int primeraCasilla = 0;
    for (i = 0 ; i < 9 ; i++){
-      for (j= 0 ; j < 9 ; j++){
-         if (n->sudo[i][j] == 0){
+      for (j = 0 ; j < 9 ; j++){
+         if (n->sudo[i][j] == 0 && primeraCasilla == 0){
+            primeraCasilla = 1;
             for (k = 1 ; k < 10 ; k++){
-               if (is_valid(n)){
-                  Node* adj = copy(n);
-                  adj->sudo[i][j] = k;
+               Node* adj = copy(n);
+               adj->sudo[i][j] = k;
+               if (is_valid(adj) && primeraCasilla == 1){
                   pushBack(list, adj);
                }
             }
@@ -104,23 +103,40 @@ List* get_adj_nodes(Node* n){
    return list;
 }
 
+
 int is_final(Node* n){
+   if (n == NULL) return 0;
    for (int i = 0 ; i < 9 ; i++){
       for (int j = 0 ; j < 9 ; j++){
          if (n->sudo[i][j] == 0)
             return 0;
       }
    }
-   if (!is_valid(n)){
-      return 1;
-   }
-    return 0;
+    return 1;
 }
 
 Node* DFS(Node* initial, int* cont){
-  return NULL;
-}
+   Stack* S = createStack();
+   cont = 0;
+   push(S, initial);
+   while (!is_empty(S)){
+      Node* n = (Node *) top(S);
+      pop(S);
+      if (is_final(n)) return n;
+      List* adj = get_adj_nodes(n);
+      Node* aux = first(adj);
+      while (aux != NULL){
+         push(S, aux);
+         aux = next(adj);
+         if (is_final(aux))
+         cont++;
+      }
+      free(n);
+   }
 
+
+   return NULL;
+}
 
 
 /*
